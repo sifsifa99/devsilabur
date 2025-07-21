@@ -104,7 +104,7 @@
       background-color: #ffc300 !important;
     }
 
-    /* Modal Styling with Animation */
+    /* Modal Styling */
     #pdfModal {
       display: none;
       position: fixed;
@@ -114,12 +114,6 @@
       background: rgba(0,0,0,0.7);
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    #pdfModal.show {
-      opacity: 1;
     }
 
     #pdfContent {
@@ -130,13 +124,6 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-
-    #pdfModal.show #pdfContent {
-      transform: scale(1);
     }
 
     .modalHeader {
@@ -156,13 +143,8 @@
       cursor: pointer;
     }
 
-    .btnClose {
-      background: #333;
-    }
-
-    .btnDownload {
-      background: #198754;
-    }
+    .btnClose { background: #333; }
+    .btnDownload { background: #198754; }
 
     #pdfFrame {
       flex: 1;
@@ -223,6 +205,7 @@
   <table id="example" class="display nowrap" style="width:100%;">
     <thead>
       <tr>
+        <th style="display:none;">Timestamp</th>
         <th>BUMD</th>
         <th>Yang Melaporkan</th>
         <th>Nama</th>
@@ -267,25 +250,17 @@
       downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
       
       const modal = document.getElementById('pdfModal');
-      modal.style.display = 'flex'; // tampilkan modal
-      modal.classList.add('show');
+      modal.style.display = 'flex';
     }
 
     function closeModal() {
       const modal = document.getElementById('pdfModal');
-      modal.classList.remove('show');
-      setTimeout(() => {
-        modal.style.display = 'none'; // hide modal after animation
-        document.getElementById('pdfFrame').src = '';
-      }, 300);
+      modal.style.display = 'none';
+      document.getElementById('pdfFrame').src = '';
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const modal = document.getElementById('pdfModal');
-      modal.style.display = 'none'; // pastikan tersembunyi saat load
-      document.getElementById('downloadBtn').addEventListener('click', function() {
-        window.open(downloadLink, '_blank');
-      });
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      window.open(downloadLink, '_blank');
     });
 
     $(document).ready(function() {
@@ -302,12 +277,11 @@
             title: 'Laporan_BUMD',
             text: 'Download Excel',
             className: 'custom-btn',
-            exportOptions: {
-              columns: ':visible'
-            }
+            exportOptions: { columns: ':visible' }
           }
         ],
         columns: [
+          { data: 'Timestamp', visible: false }, // Hidden for sorting
           { data: 'BUMD' },
           { data: 'Pihak Yang Melaporkan' },
           { data: 'Nama Lengkap' },
@@ -322,20 +296,22 @@
             }
           }
         ],
+        order: [[0, 'desc']], // Sort by Timestamp DESC
         scrollX: true
       });
 
+      // Filter logic
       $('#filter-bumd').on('change', function() {
-        table.column(0).search($(this).val(), false, false).draw();
+        table.column(1).search($(this).val(), false, false).draw();
       });
       $('#filter-tahun').on('change', function() {
-        table.column(5).search($(this).val(), false, false).draw();
+        table.column(6).search($(this).val(), false, false).draw();
       });
       $('#filter-jenis').on('change', function() {
-        table.column(4).search($(this).val(), false, false).draw();
+        table.column(5).search($(this).val(), false, false).draw();
       });
       $('#filter-pihak').on('change', function() {
-        table.column(1).search($(this).val(), false, false).draw();
+        table.column(2).search($(this).val(), false, false).draw();
       });
     });
   </script>
