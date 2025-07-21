@@ -36,7 +36,8 @@
 
     .lihat-btn {
       background-color: #ffd60a !important; color: #000 !important;
-      font-weight: bold; border-radius: 6px; padding: 6px 12px;
+      font-weight: bold; border-radius: 6px; padding: 6px 12px; margin: 2px;
+      cursor: pointer;
     }
     .lihat-btn:hover { background-color: #ffc300 !important; }
 
@@ -161,8 +162,8 @@
             customizeData: function(data) {
               let colIndex = 7; // kolom File
               for (let i = 0; i < data.body.length; i++) {
-                let url = table.row(i).data()['Upload File Laporan'] || '';
-                data.body[i][colIndex] = url;
+                let urls = table.row(i).data()['Upload File Laporan'] || '';
+                data.body[i][colIndex] = urls; // simpan semua link asli
               }
             }
           }
@@ -179,7 +180,10 @@
             data: 'Upload File Laporan',
             render: function(data) {
               if (!data) return '-';
-              return `<button class="lihat-btn" onclick="showPreview('${data}')">Lihat</button>`;
+              let links = data.split(',').map(link => link.trim());
+              return links.map((link, index) => 
+                `<button class="lihat-btn" onclick="showPreview('${link}')">Lihat ${index + 1}</button>`
+              ).join(' ');
             }
           }
         ],
