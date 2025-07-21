@@ -104,7 +104,7 @@
       background-color: #ffc300 !important;
     }
 
-    /* Modal */
+    /* Modal Styling */
     #pdfModal {
       display: none;
       position: fixed;
@@ -123,6 +123,7 @@
       border-radius: 8px;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .modalHeader {
@@ -133,21 +134,17 @@
       background: #b30000;
     }
 
-    .btnClose {
-      background: #333;
-      color: #fff;
+    .modalHeader button {
       border: none;
-      padding: 8px 14px;
       border-radius: 5px;
+      padding: 8px 14px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
     }
 
-    .btnDownload {
-      background: #198754;
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 5px;
-    }
+    .btnClose { background: #333; }
+    .btnDownload { background: #198754; }
 
     #pdfFrame {
       flex: 1;
@@ -168,14 +165,15 @@
     <label>Filter BUMD:</label>
     <select id="filter-bumd">
       <option value="">-- Semua BUMD --</option>
-      <option value="PT. Bhumi Pandanaran Sejahtera (Perseroda)">PT. Bhumi Pandanaran Sejahtera (Perseroda)</option>
-      <option value="PT. BPR Bank Kota Semarang (Perseroda)">PT. BPR Bank Kota Semarang (Perseroda)</option>
       <option value="PT. Taman Satwa Kota Semarang (Perseroda)">PT. Taman Satwa Kota Semarang (Perseroda)</option>
+      <option value="PT. BPR Bank Kota Semarang (Perseroda)">PT. BPR Bank Kota Semarang (Perseroda)</option>
+      <option value="PT. Bhumi Pandanaran Sejahtera (Perseroda)">PT. Bhumi Pandanaran Sejahtera (Perseroda)</option>
+      <option value="Perumda Air Minum Tirta Moedal Kota Semarang">Perumda Air Minum Tirta Moedal Kota Semarang</option>
     </select>
 
     <label>Jenis RUPS:</label>
-    <select id="filter-rups">
-      <option value="">-- Semua Jenis --</option>
+    <select id="filter-jenis-rups">
+      <option value="">-- Semua --</option>
       <option value="RUPS Tahunan">RUPS Tahunan</option>
       <option value="RUPS Luar Biasa">RUPS Luar Biasa</option>
     </select>
@@ -187,6 +185,10 @@
       <option value="2024">2024</option>
       <option value="2025">2025</option>
       <option value="2026">2026</option>
+      <option value="2027">2027</option>
+      <option value="2028">2028</option>
+      <option value="2029">2029</option>
+      <option value="2030">2030</option>
     </select>
   </div>
 
@@ -194,6 +196,7 @@
   <table id="example" class="display nowrap" style="width:100%;">
     <thead>
       <tr>
+        <th style="display:none;">Timestamp</th>
         <th>BUMD</th>
         <th>Nama Pelapor</th>
         <th>Jabatan</th>
@@ -237,11 +240,13 @@
       document.getElementById('pdfFrame').src = previewUrl;
       downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
       
-      document.getElementById('pdfModal').style.display = 'flex';
+      const modal = document.getElementById('pdfModal');
+      modal.style.display = 'flex';
     }
 
     function closeModal() {
-      document.getElementById('pdfModal').style.display = 'none';
+      const modal = document.getElementById('pdfModal');
+      modal.style.display = 'none';
       document.getElementById('pdfFrame').src = '';
     }
 
@@ -262,10 +267,12 @@
             extend: 'excelHtml5',
             title: 'Laporan_RUPS',
             text: 'Download Excel',
-            className: 'custom-btn'
+            className: 'custom-btn',
+            exportOptions: { columns: ':visible' }
           }
         ],
         columns: [
+          { data: 'Timestamp', visible: false }, // Hidden for sorting
           { data: 'BUMD' },
           { data: 'Nama Lengkap Pelapor' },
           { data: 'Nomenklatur Jabatan' },
@@ -280,17 +287,18 @@
             }
           }
         ],
+        order: [[0, 'desc']], // Sort by Timestamp DESC
         scrollX: true
       });
 
-      // Filter
+      // Filter logic
       $('#filter-bumd').on('change', function() {
-        table.column(0).search($(this).val(), false, false).draw();
-      });
-      $('#filter-rups').on('change', function() {
-        table.column(4).search($(this).val(), false, false).draw();
+        table.column(1).search($(this).val(), false, false).draw();
       });
       $('#filter-tahun').on('change', function() {
+        table.column(6).search($(this).val(), false, false).draw();
+      });
+      $('#filter-jenis-rups').on('change', function() {
         table.column(5).search($(this).val(), false, false).draw();
       });
     });
