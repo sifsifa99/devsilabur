@@ -23,7 +23,6 @@
     .back-btn:hover { background-color: #d90429; }
 
     .filter-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 20px; }
-    .filter-container label { font-weight: 600; margin-right: 5px; }
     select { padding: 8px 12px; border: 2px solid #b30000; border-radius: 6px; }
 
     table.dataTable thead { background: #b30000; color: #fff; }
@@ -62,7 +61,6 @@
 
   <!-- FILTER -->
   <div class="filter-container">
-    <label>Filter BUMD:</label>
     <select id="filter-bumd">
       <option value="">-- Semua BUMD --</option>
       <option value="PT. Taman Satwa Kota Semarang (Perseroda)">PT. Taman Satwa Kota Semarang (Perseroda)</option>
@@ -71,14 +69,12 @@
       <option value="Perumda Air Minum Tirta Moedal Kota Semarang">Perumda Air Minum Tirta Moedal Kota Semarang</option>
     </select>
 
-    <label>Jenis RUPS:</label>
     <select id="filter-jenis-rups">
-      <option value="">-- Semua --</option>
+      <option value="">-- Semua Jenis RUPS --</option>
       <option value="RUPS Tahunan">RUPS Tahunan</option>
       <option value="RUPS Luar Biasa">RUPS Luar Biasa</option>
     </select>
 
-    <label>Filter Tahun:</label>
     <select id="filter-tahun">
       <option value="">-- Semua Tahun --</option>
       <option value="2023">2023</option>
@@ -151,7 +147,7 @@
     $(document).ready(function() {
       var table = $('#example').DataTable({
         ajax: {
-          url: 'https://script.google.com/macros/s/AKfycbzyeNYReXi4Z861QYNw2Zb5mWa9Bcoisps_2CgczA9O0ost1xWZubTRTP6Du7eS3J0lpg/exec',
+          url: 'https://script.google.com/macros/s/AKfycbzyeNYReXi4Z861QYNw2Zb5mWa9Bcoisps_2CgczA9O0ost1xWZubTRTP6Du7eS3J0lpg/exec', // JSON untuk RUPS
           dataSrc: 'data'
         },
         dom: 'lBfrtip',
@@ -187,18 +183,19 @@
             }
           }
         ],
-        order: [[0, 'desc']], // Sort by Timestamp DESC
+        order: [[0, 'desc']], // urut terbaru
         scrollX: true
       });
 
+      // Filter
       $('#filter-bumd').on('change', function() {
-        table.column(1).search($(this).val(), false, false).draw();
-      });
-      $('#filter-tahun').on('change', function() {
-        table.column(6).search($(this).val(), false, false).draw();
+        table.column(1).search(this.value).draw();
       });
       $('#filter-jenis-rups').on('change', function() {
-        table.column(5).search($(this).val(), false, false).draw();
+        table.column(5).search(this.value).draw();
+      });
+      $('#filter-tahun').on('change', function() {
+        table.column(6).search(this.value).draw();
       });
     });
   </script>
